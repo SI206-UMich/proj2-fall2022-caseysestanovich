@@ -7,6 +7,34 @@ import unittest
 
 
 def get_listings_from_search_results(html_file):
+    f = open(html_file)
+ 
+    title = []
+    costPerNight = []
+    l_id = []
+
+    soup = BeautifulSoup(f, 'html.parser')
+
+    info = soup.find_all('div', class_ = "t1jojoys dir dir-ltr")
+    cost = soup.find_all('span', class_ = "a8jt5op dir dir-ltr")
+
+    for i in info: 
+        title.append(i.text.strip())
+        l_id.append(i.get('id')[6:])
+    
+    for i in cost:
+        if (i.text.strip()[0] == '$'):
+            costPerNight.append(int(i.text.strip()[1:4]))
+    
+    final_list = []
+    for i in range(len(title)):
+        tup = (title[i], costPerNight[i], l_id[i])
+        final_list.append(tup)
+
+    f.close()
+
+    return final_list
+
     """
     Write a function that creates a BeautifulSoup object on html_file. Parse
     through the object and return a list of tuples containing:
@@ -29,6 +57,48 @@ def get_listings_from_search_results(html_file):
 
 
 def get_listing_information(listing_id):
+
+    filename = 'html_files/listing_' + listing_id + ".html"
+    f = open(filename)
+
+    soup = BeautifulSoup(f, 'html.parser')
+
+    # policy number from individual listing
+    num_ = soup.find('li', class_="f19phm7j dir dir-ltr")
+    for i in num_.find('span', class_='ll4r2nl dir dir-ltr'): 
+        policy_num = i.text.strip()
+        
+
+    # room type from individual listing 
+    rm_t = soup.find('h2', class_="_14i3z6h")
+    if rm_t.get('Private') == True:
+        typeroom = 'Private Room'
+    elif rm_t.get('Shared') == True:
+        typeroom = 'Shared Room'
+    else: 
+        typeroom = 'Entire Room'
+
+
+    # number of bedrooms from individual listing
+    numRoom = soup.find_all('li', class_='l7n4lsf dir dir-ltr')
+    reg = '(\d)\sbedrooms*'
+    x = re.findall(reg, str(numRoom))
+    
+    if x[0] == 'Studio':
+        bedrooms = 1 
+    else: 
+        bedrooms = int(x[0])
+
+    
+    # tuple of each individual listing in a list
+    final_list = ()
+    tup = (policy_num, typeroom, bedrooms)
+    final_list += tup
+
+    f.close()
+    return final_list
+
+
     """
     Write a function to return relevant information in a tuple from an Airbnb listing id.
     NOTE: Use the static files in the html_files folder, do NOT send requests to the actual website.
@@ -56,6 +126,16 @@ def get_listing_information(listing_id):
 
 
 def get_detailed_listing_database(html_file):
+
+    final_l = []
+    frt = get_listings_from_search_results(html_file)
+
+    for i in frt: 
+        snd = get_listing_information(i[2])
+        final_l.append(i + snd)
+    
+    return final_l
+
     """
     Write a function that calls the above two functions in order to return
     the complete listing information using the functions you’ve created.
@@ -139,7 +219,7 @@ def extra_credit(listing_id):
 class TestCases(unittest.TestCase):
 
     def test_get_listings_from_search_results(self):
-        # call get_listings_from_search_results("html_files/mission_district_search_results.html")
+        get_listings_from_search_results("html_files/mission_district_search_results.html")
         # and save to a local variable
         listings = get_listings_from_search_results("html_files/mission_district_search_results.html")
         # check that the number of listings extracted is correct (20 listings)
