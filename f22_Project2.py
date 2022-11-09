@@ -1,3 +1,5 @@
+#Worked with Ansley Lewis and Mari Jaoshvili!
+
 from xml.sax import parseString
 from bs4 import BeautifulSoup
 import re
@@ -67,7 +69,7 @@ def get_listing_information(listing_id):
     num_ = soup.find('li', class_="f19phm7j dir dir-ltr")
     for i in num_.find('span', class_='ll4r2nl dir dir-ltr'): 
         policy_num = i.text.strip()
-        
+
 
     # room type from individual listing 
     rm_t = soup.find('h2', class_="_14i3z6h")
@@ -80,14 +82,14 @@ def get_listing_information(listing_id):
 
 
     # number of bedrooms from individual listing
-    numRoom = soup.find_all('li', class_='l7n4lsf dir dir-ltr')
-    reg = '(\d)\sbedrooms*'
-    x = re.findall(reg, str(numRoom))
+    numRoom = str(soup.find_all('li', class_='l7n4lsf dir dir-ltr'))
+    reg = '\d*\s*\w*\s*bedroom|Studio' 
+    x = re.findall(reg, numRoom)
     
-    if x[0] == 'Studio':
+    if x[0] == 'Studio': 
         bedrooms = 1 
     else: 
-        bedrooms = int(x[0])
+        bedrooms = int(x[0][0]) #confused here
 
     
     # tuple of each individual listing in a list
