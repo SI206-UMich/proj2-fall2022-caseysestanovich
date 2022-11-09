@@ -195,6 +195,23 @@ def write_csv(data, filename):
 
 
 def check_policy_numbers(data):
+
+    temp_pol = []
+    temp_id = []
+    ran_str = ""
+    for i in data: 
+        ran_str += (i[3] + " ")
+        temp_pol.append(i[3])
+        temp_id.append(i[2])
+    
+    regex = 'STR-000\d{4}|20\d{2}-00\d{4}STR|Pending|Exempt'
+
+    wrong = []
+    x = re.findall(regex, ran_str)
+    for i in range(len(temp_pol)):
+        if temp_pol[i] not in x:
+            wrong.append(temp_id[i])
+    return wrong
     """
     Write a function that takes in a list of tuples called data, (i.e. the one that is returned by
     get_detailed_listing_database()), and parses through the policy number of each, validating the
