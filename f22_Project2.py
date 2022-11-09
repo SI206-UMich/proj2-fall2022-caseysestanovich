@@ -155,6 +155,21 @@ def get_detailed_listing_database(html_file):
 
 
 def write_csv(data, filename):
+
+    f = open(filename, 'w')
+    f.write("Listing Title,Cost,Listing ID,Policy Number,Place Type,Number of Bedrooms")
+    f.write('\n')
+
+    data_sort = sorted(data, key = lambda t:t[1])
+
+    for i in data_sort: 
+        row = ""
+        for item in i: 
+            row += str(item) + ","
+        f.write(row.rstrip(','))
+        f.write('\n')
+    f.close()
+
     """
     Write a function that takes in a list of tuples (called data, i.e. the
     one that is returned by get_detailed_listing_database()), sorts the tuples in
